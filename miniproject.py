@@ -1,4 +1,3 @@
-# mnist_digit_recognizer.py (with performance dashboard)
 import streamlit as st
 import numpy as np
 from PIL import Image
@@ -7,8 +6,8 @@ import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
-# Configure the app
 st.set_page_config(
     page_title="Handwritten Digit Recognizer",
     page_icon="✍️",
@@ -51,7 +50,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Title
 st.title("✍️ Handwritten Digit Recognition System")
 st.markdown("""
         <div align = "right">
@@ -63,27 +61,26 @@ st.markdown("""
         </div>
         """, unsafe_allow_html=True)
 
-# Load model and metrics (you would replace these with your actual metrics)
 @st.cache_resource
 def load_model_and_metrics():
     model = joblib.load('mnist_svm_model.joblib')
     
-    # Example metrics - replace with your actual metrics
     metrics = {
-        'accuracy': 0.9823,
-        'precision': 0.9818,
-        'recall': 0.9815,
-        'f1_score': 0.9816,
-        'confusion_matrix': np.array([[967, 0, 1, 0, 0, 2, 5, 1, 3, 1],
-                                     [0, 1123, 2, 2, 0, 1, 3, 1, 3, 0],
-                                     [5, 6, 997, 7, 4, 1, 5, 8, 9, 2],
-                                     [1, 1, 10, 971, 0, 9, 1, 7, 9, 11],
-                                     [2, 1, 3, 0, 953, 0, 4, 6, 2, 11],
-                                     [5, 1, 0, 9, 2, 861, 6, 1, 4, 3],
-                                     [6, 3, 2, 0, 4, 6, 933, 0, 4, 0],
-                                     [1, 5, 15, 2, 3, 0, 0, 993, 3, 16],
-                                     [4, 4, 6, 9, 4, 8, 5, 5, 925, 4],
-                                     [4, 4, 1, 6, 13, 3, 0, 9, 2, 967]])
+        'accuracy': 0.9965,
+        'precision': 0.9965,
+        'recall': 0.9965,
+        'f1_score': 0.9965,
+        'confusion_matrix': np.array([
+ [979, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+ [0, 1133, 1, 0, 0, 0, 0, 1, 0, 0],
+ [1, 0, 1029, 0, 0, 0, 0, 0, 2, 0],
+ [0, 0, 1, 1008, 0, 1, 0, 0, 0, 0],
+ [1, 0, 0, 0, 980, 0, 0, 0, 0, 1],
+ [0, 0, 0, 2, 1, 888, 0, 0, 1, 0],
+ [1, 1, 0, 0, 0, 1, 954, 0, 1, 0],
+ [0, 1, 2, 0, 0, 0, 0, 1025, 0, 0],
+ [0, 0, 0, 2, 1, 1, 0, 1, 967, 2],
+ [1, 1, 0, 2, 2, 0, 0, 0, 1, 1002]])
     }
     return model, metrics
 
