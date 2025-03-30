@@ -2,3 +2,7 @@ streamlit
 pandas
 numpy
 streamlit_drawable_canvas
+joblib
+scikit-learn
+plotly
+matplotlib
