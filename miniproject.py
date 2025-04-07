@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 import tensorflow as tf
+from scipy.ndimage import measurements
 from tensorflow.keras.models import load_model
 from streamlit_extras.metric_cards import style_metric_cards
 
@@ -127,14 +128,57 @@ else:
     model = cnn_model
     metrics = cnn_metrics
 
-def preprocess_image(image_data, model_type):
+def center_digit(digit_array):
+    # Create a copy to avoid modifying original
+    digit = digit_array.copy()
+    
+    # Threshold to get binary image (handle inverted MNIST format)
+    threshold = np.percentile(digit, 95)  # Use top 5% as threshold
+    binary = digit > threshold
+    
+    # Calculate center of mass (only using pixels above threshold)
+    try:
+        cy, cx = measurements.center_of_mass(binary)
+    except:
+        return digit  # Return original if center calculation fails
+    
+    # Handle case where all pixels are background
+    if np.isnan(cx) or np.isnan(cy):
+        return digit
+    
+    # Calculate needed shift
+    rows, cols = digit.shape
+    shiftx = int(np.round(cols/2.0 - cx))
+    shifty = int(np.round(rows/2.0 - cy))
+    
+    shifted = np.zeros_like(digit)
+    x_start = max(shiftx, 0)
+    x_end = min(cols + shiftx, cols)
+    y_start = max(shifty, 0)
+    y_end = min(rows + shifty, rows)
+    
+    orig_x_start = max(-shiftx, 0)
+    orig_x_end = min(cols - shiftx, cols)
+    orig_y_start = max(-shifty, 0)
+    orig_y_end = min(rows - shifty, rows)
+    
+    shifted[y_start:y_end, x_start:x_end] = digit[orig_y_start:orig_y_end, orig_x_start:orig_x_end]
+    
+    return shifted
+
+def preprocess_image(image_data, model_type, center_digits=True):
     img = Image.fromarray(image_data.astype('uint8')).convert('L')
     img = img.resize((28, 28), Image.LANCZOS)
-    img_array = 255 - np.array(img)  # Big Convert
+    img_array = 255 - np.array(img)  # BIG INVERT
+    
+    if center_digits:
+        img_array = center_digit(img_array)
+    
     if model_type == "Convolutional Neural Network":
         img_array = img_array.reshape(1, 28, 28, 1) / 255.0
-    else:
+    else:  
         img_array = img_array.flatten().reshape(1, -1) / 255.0
+    
     return img_array
 
 col1, col2 = st.columns([2, 3])
