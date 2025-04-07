@@ -312,21 +312,3 @@ styled_df = (comparison_df.set_index('Metric')
 
 st.dataframe(styled_df)
 
-# --- Model Selection Recommendation ---
-st.markdown("### 🏆 Recommendation")
-
-if cnn_metrics['accuracy'] > svm_metrics['accuracy']:
-    st.success("""
-    **The CNN model performs better overall.**  
-    Consider using the CNN model for production as it shows:
-    - Higher accuracy ({:.2%} vs {:.2%})
-    - Better generalization on complex patterns
-    """.format(cnn_metrics['accuracy'], svm_metrics['accuracy']))
-else:
-    st.warning("""
-    **The SVM model performs comparably or better.**  
-    The SVM model might be preferable because:
-    - Similar accuracy with simpler architecture
-    - Faster inference times
-    - Lower computational requirements
-    """.format(svm_metrics['accuracy'], cnn_metrics['accuracy']))
